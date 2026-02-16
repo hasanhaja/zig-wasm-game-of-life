@@ -1,0 +1,7 @@
+{
+  "extends": "@total-typescript/tsconfig/tsc/dom/app",
+  "compilerOptions": {
+    "outDir": "_site"
+  },
+  "include": ["src/**/*"]
+}
