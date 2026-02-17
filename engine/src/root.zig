@@ -1,18 +1,27 @@
 //! By convention, root.zig is the root source file when making a library.
 const std = @import("std");
-const IntegerBitSet = std.bit_set.IntegerBitSet;
+const ArrayBitSet = std.bit_set.ArrayBitSet;
 
-const Universe = extern struct {
+extern fn js_math_random() f64;
+
+const WIDTH = 64;
+const HEIGHT = 64;
+
+const size = @as(u16, WIDTH * HEIGHT);
+const BitSet = ArrayBitSet(u8, size);
+
+// extern doesn't support BitSet field
+const Universe = struct {
     width: u32,
     height: u32,
-    cells: IntegerBitSet,
+    cells: BitSet,
 
     pub fn get_index(self: Universe, row: u32, column: u32) usize {
         return @as(usize, row * self.width + column);
     }
 
     pub fn live_neighbor_count(self: Universe, row: u32, column: u32) u8 {
-        var count = 0;
+        var count: u8 = 0;
         const row_iter: [3]u32 = .{ self.height - 1, 0, 1 };
         const col_iter: [3]u32 = .{ self.width - 1, 0, 1 };
 
@@ -25,22 +34,16 @@ const Universe = extern struct {
                 const neighbor_row = @mod(row + delta_row, self.height);
                 const neighbor_col = @mod(column + delta_col, self.width);
                 const idx = self.get_index(neighbor_row, neighbor_col);
-                count += @as(u8, self.cells[idx]);
+                count += self.cells.masks[idx];
             }
         }
         return count;
     }
 };
 
-extern fn js_math_random() f64;
-
 // You can only return primitive values across the WASM boundary (currently), so return a pointer
 export fn new() *const Universe {
-    const WIDTH = 64;
-    const HEIGHT = 64;
-
-    const size = @as(u16, WIDTH * HEIGHT);
-    var CELLS = IntegerBitSet(size);
+    var CELLS = BitSet.initEmpty();
 
     for (0..size) |i| {
         CELLS.setValue(i, js_math_random() > 0.5);
@@ -53,8 +56,8 @@ export fn new() *const Universe {
     };
 }
 
-fn get_next_value(cell: bool, live_neighbor: u8) bool {
-    if (cell) {
+fn get_next_value(cell: u8, live_neighbor: u8) bool {
+    if (cell > 0) {
         return live_neighbor == 2 or live_neighbor == 3;
     } else {
         return live_neighbor == 3;
@@ -62,13 +65,13 @@ fn get_next_value(cell: bool, live_neighbor: u8) bool {
 }
 
 export fn tick(self: *Universe) void {
-    var next = IntegerBitSet(@as(u16, self.cells.bit_length)).initEmpty();
-    next.mask = self.cells.mask;
+    var next = BitSet.initEmpty();
+    next.masks = self.cells.masks;
 
     for (0..self.height) |row| {
         for (0..self.width) |col| {
             const idx = self.get_index(row, col);
-            const cell = self.cells[idx];
+            const cell = self.cells.masks[idx];
             const live_neighbor = self.live_neighbor_count(row, col);
             const nextValue = get_next_value(cell, live_neighbor);
             next.setValue(idx, nextValue);
@@ -85,7 +88,7 @@ export fn height(self: *const Universe) u32 {
     return self.height;
 }
 
-export fn cells(self: *const Universe) *const IntegerBitSet {
+export fn cells(self: *const Universe) *const BitSet {
     return &self.cells;
 }
 
@@ -103,7 +106,8 @@ export fn render(_: *const Universe) u32 {
 
 //     try stdout.flush(); // Don't forget to flush!
 // }
-    @panic("TODO");
+    // @panic("TODO");
+    return 0;
 }
 
 test "Universe" {
