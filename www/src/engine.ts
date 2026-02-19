@@ -10,10 +10,11 @@ type Pointer = number;
 
 const newUniverse = result.instance.exports.new as (() => Pointer);
 const tickUniverse = result.instance.exports.tick as ((ptr: Pointer) => void);
-const widthUniverse = result.instance.exports.width as ((ptr: Pointer) => number);
-const heightUniverse = result.instance.exports.height as ((ptr: Pointer) => number);
-const cellsUniverse = result.instance.exports.cells as ((ptr: Pointer) => Pointer);
+const widthUniverse = result.instance.exports.getWidth as ((ptr: Pointer) => number);
+const heightUniverse = result.instance.exports.getHeight as ((ptr: Pointer) => number);
+const cellsUniverse = result.instance.exports.getCells as ((ptr: Pointer) => Pointer);
 const isAliveUniverse = result.instance.exports.isAlive as ((ptr: Pointer, idx: number) => number);
+const destroyUniverse = result.instance.exports.destroy as ((ptr: Pointer) => void);
 
 export const memory = result.instance.exports.memory as WebAssembly.Memory;
 
@@ -32,15 +33,19 @@ export class Universe {
     return isAliveUniverse(this.#universePtr, idx) === 1;
   }
 
-  public width(): number {
+  public get width(): number {
     return widthUniverse(this.#universePtr);
   }
 
-  public height(): number {
+  public get height(): number {
     return heightUniverse(this.#universePtr);
   }
 
-  public cells(): Pointer {
+  public get cells(): Pointer {
     return cellsUniverse(this.#universePtr);
+  }
+
+  public destroy() {
+    destroyUniverse(this.#universePtr);
   }
 }

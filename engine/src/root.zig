@@ -14,7 +14,6 @@ const BitSet = ArrayBitSet(u8, size);
 
 var allocator = std.heap.wasm_allocator;
 
-// extern doesn't support BitSet field
 const Universe = struct {
     width: u32,
     height: u32,
@@ -48,9 +47,40 @@ const Universe = struct {
     export fn isAlive(self: *Universe, idx: usize) bool {
         return self.cells.isSet(idx);
     }
+
+    export fn tick(self: *Universe) void {
+        var next = BitSet.initEmpty();
+
+        for (0..self.height) |row| {
+            for (0..self.width) |col| {
+                const idx = self.get_index(row, col);
+                const cell = self.cells.isSet(idx);
+                const live_neighbor = self.live_neighbor_count(row, col);
+                const nextValue = get_next_value(cell, live_neighbor);
+                next.setValue(idx, nextValue);
+            }
+        }
+        self.cells = next;
+    }
+
+    export fn getWidth(self: *const Universe) u32 {
+        return self.width;
+    }
+
+    export fn getHeight(self: *const Universe) u32 {
+        return self.height;
+    }
+
+    export fn getCells(self: *const Universe) *const BitSet {
+        return &self.cells;
+    }
+
+    export fn destroy(self: *Universe) void {
+        allocator.destroy(self);
+    }
 };
 
-// You can only return primitive values across the WASM boundary (currently), so return a pointer
+// You can only return primitive values across the WASM boundary (currently), so return a pointer, which is a number that is an offset in linear memory
 export fn new() *Universe {
     var CELLS = BitSet.initEmpty();
 
@@ -73,33 +103,6 @@ fn get_next_value(cell: bool, live_neighbor: u8) bool {
     } else {
         return live_neighbor == 3;
     }
-}
-
-export fn tick(self: *Universe) void {
-    var next = BitSet.initEmpty();
-
-    for (0..self.height) |row| {
-        for (0..self.width) |col| {
-            const idx = self.get_index(row, col);
-            const cell = self.cells.isSet(idx);
-            const live_neighbor = self.live_neighbor_count(row, col);
-            const nextValue = get_next_value(cell, live_neighbor);
-            next.setValue(idx, nextValue);
-        }
-    }
-    self.cells = next;
-}
-
-export fn width(self: *const Universe) u32 {
-    return self.width;
-}
-
-export fn height(self: *const Universe) u32 {
-    return self.height;
-}
-
-export fn cells(self: *const Universe) *const BitSet {
-    return &self.cells;
 }
 
 test "Universe" {

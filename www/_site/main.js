@@ -5,8 +5,8 @@ const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#00912d";
 // Construct the universe, and get its width and height.
 const universe = new Universe();
-const width = universe.width();
-const height = universe.height();
+const width = universe.width;
+const height = universe.height;
 // Give the canvas room for all of our cells and a 1px border
 // around each of them.
 const canvas = document.getElementById("game-of-life-canvas");

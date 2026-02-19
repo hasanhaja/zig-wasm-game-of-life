@@ -7,10 +7,11 @@ const result = await WebAssembly.instantiateStreaming(fetch("./engine.wasm"), {
 });
 const newUniverse = result.instance.exports.new;
 const tickUniverse = result.instance.exports.tick;
-const widthUniverse = result.instance.exports.width;
-const heightUniverse = result.instance.exports.height;
-const cellsUniverse = result.instance.exports.cells;
+const widthUniverse = result.instance.exports.getWidth;
+const heightUniverse = result.instance.exports.getHeight;
+const cellsUniverse = result.instance.exports.getCells;
 const isAliveUniverse = result.instance.exports.isAlive;
+const destroyUniverse = result.instance.exports.destroy;
 export const memory = result.instance.exports.memory;
 export class Universe {
     #universePtr;
@@ -23,14 +24,17 @@ export class Universe {
     isAlive(idx) {
         return isAliveUniverse(this.#universePtr, idx) === 1;
     }
-    width() {
+    get width() {
         return widthUniverse(this.#universePtr);
     }
-    height() {
+    get height() {
         return heightUniverse(this.#universePtr);
     }
-    cells() {
+    get cells() {
         return cellsUniverse(this.#universePtr);
+    }
+    destroy() {
+        destroyUniverse(this.#universePtr);
     }
 }
 //# sourceMappingURL=engine.js.map
