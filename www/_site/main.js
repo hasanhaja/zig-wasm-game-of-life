@@ -2,7 +2,7 @@ import { Universe, memory } from "./engine.js";
 const CELL_SIZE = 5; // px
 const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
-const ALIVE_COLOR = "#000000";
+const ALIVE_COLOR = "#00912d";
 // Construct the universe, and get its width and height.
 const universe = new Universe();
 const width = universe.width();

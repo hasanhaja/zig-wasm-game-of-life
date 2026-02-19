@@ -6,8 +6,8 @@ extern fn js_math_random() f64;
 extern fn debug() void;
 extern fn inspect(x: usize) void;
 
-const WIDTH = 64;
-const HEIGHT = 64;
+const WIDTH = 200;
+const HEIGHT = 150;
 
 const size = @as(u16, WIDTH * HEIGHT);
 const BitSet = ArrayBitSet(u8, size);
