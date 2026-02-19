@@ -15,8 +15,8 @@ const destroyUniverse = result.instance.exports.destroy;
 export const memory = result.instance.exports.memory;
 export class Universe {
     #universePtr;
-    constructor() {
-        this.#universePtr = newUniverse();
+    constructor(width, height) {
+        this.#universePtr = newUniverse(width, height);
     }
     tick() {
         tickUniverse(this.#universePtr);

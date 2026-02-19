@@ -8,7 +8,7 @@ const result = await WebAssembly.instantiateStreaming(fetch("./engine.wasm"), {
 
 type Pointer = number;
 
-const newUniverse = result.instance.exports.new as (() => Pointer);
+const newUniverse = result.instance.exports.new as ((width: number, height: number) => Pointer);
 const tickUniverse = result.instance.exports.tick as ((ptr: Pointer) => void);
 const widthUniverse = result.instance.exports.getWidth as ((ptr: Pointer) => number);
 const heightUniverse = result.instance.exports.getHeight as ((ptr: Pointer) => number);
@@ -21,8 +21,8 @@ export const memory = result.instance.exports.memory as WebAssembly.Memory;
 export class Universe {
   readonly #universePtr: Pointer;
 
-  constructor() {
-    this.#universePtr = newUniverse();  
+  constructor(width: number, height: number) {
+    this.#universePtr = newUniverse(width, height);
   }
 
   public tick() {

@@ -1,16 +1,10 @@
 //! By convention, root.zig is the root source file when making a library.
 const std = @import("std");
-const ArrayBitSet = std.bit_set.ArrayBitSet;
+const BitSet = std.bit_set.DynamicBitSet;
 
 extern fn js_math_random() f64;
 extern fn debug() void;
 extern fn inspect(x: usize) void;
-
-const WIDTH = 200;
-const HEIGHT = 150;
-
-const size = @as(u16, WIDTH * HEIGHT);
-const BitSet = ArrayBitSet(u8, size);
 
 var allocator = std.heap.wasm_allocator;
 
@@ -49,7 +43,9 @@ const Universe = struct {
     }
 
     export fn tick(self: *Universe) void {
-        var next = BitSet.initEmpty();
+        var current = self.cells;
+        var next = BitSet.initEmpty(allocator, current.capacity()) catch unreachable;
+        defer current.deinit();
 
         for (0..self.height) |row| {
             for (0..self.width) |col| {
@@ -76,23 +72,25 @@ const Universe = struct {
     }
 
     export fn destroy(self: *Universe) void {
+        self.cells.deinit();
         allocator.destroy(self);
     }
 };
 
 // You can only return primitive values across the WASM boundary (currently), so return a pointer, which is a number that is an offset in linear memory
-export fn new() *Universe {
-    var CELLS = BitSet.initEmpty();
+export fn new(width: u32, height: u32) *Universe {
+    const size = width * height;
+    var cells = BitSet.initEmpty(allocator, @as(usize, size)) catch unreachable;
 
     for (0..size) |i| {
-        CELLS.setValue(i, js_math_random() > 0.5);
+        cells.setValue(i, js_math_random() > 0.5);
     }
 
     const universe = allocator.create(Universe) catch unreachable;
     universe.* = .{
-        .width = WIDTH,
-        .height = HEIGHT,
-        .cells = CELLS,
+        .width = width,
+        .height = height,
+        .cells = cells,
     };
     return universe;
 }

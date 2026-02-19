@@ -3,10 +3,10 @@ const CELL_SIZE = 5; // px
 const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#00912d";
-// Construct the universe, and get its width and height.
-const universe = new Universe();
-const width = universe.width;
-const height = universe.height;
+// Construct the universe
+const width = 200;
+const height = 150;
+const universe = new Universe(width, height);
 // Give the canvas room for all of our cells and a 1px border
 // around each of them.
 const canvas = document.getElementById("game-of-life-canvas");
