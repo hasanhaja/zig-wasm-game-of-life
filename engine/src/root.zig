@@ -44,6 +44,10 @@ const Universe = struct {
         }
         return count;
     }
+
+    export fn isAlive(self: *Universe, idx: usize) bool {
+        return self.cells.isSet(idx);
+    }
 };
 
 // You can only return primitive values across the WASM boundary (currently), so return a pointer

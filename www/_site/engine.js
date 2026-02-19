@@ -10,6 +10,7 @@ const tickUniverse = result.instance.exports.tick;
 const widthUniverse = result.instance.exports.width;
 const heightUniverse = result.instance.exports.height;
 const cellsUniverse = result.instance.exports.cells;
+const isAliveUniverse = result.instance.exports.isAlive;
 export const memory = result.instance.exports.memory;
 export class Universe {
     #universePtr;
@@ -18,6 +19,9 @@ export class Universe {
     }
     tick() {
         tickUniverse(this.#universePtr);
+    }
+    isAlive(idx) {
+        return isAliveUniverse(this.#universePtr, idx) === 1;
     }
     width() {
         return widthUniverse(this.#universePtr);

@@ -13,6 +13,7 @@ const tickUniverse = result.instance.exports.tick as ((ptr: Pointer) => void);
 const widthUniverse = result.instance.exports.width as ((ptr: Pointer) => number);
 const heightUniverse = result.instance.exports.height as ((ptr: Pointer) => number);
 const cellsUniverse = result.instance.exports.cells as ((ptr: Pointer) => Pointer);
+const isAliveUniverse = result.instance.exports.isAlive as ((ptr: Pointer, idx: number) => number);
 
 export const memory = result.instance.exports.memory as WebAssembly.Memory;
 
@@ -25,6 +26,10 @@ export class Universe {
 
   public tick() {
     tickUniverse(this.#universePtr);
+  }
+
+  public isAlive(idx: number): boolean {
+    return isAliveUniverse(this.#universePtr, idx) === 1;
   }
 
   public width(): number {

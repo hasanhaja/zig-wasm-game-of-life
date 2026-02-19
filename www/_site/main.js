@@ -1,4 +1,4 @@
-import { Universe, memory } from "./engine.js";
+import { Universe } from "./engine.js";
 const CELL_SIZE = 5; // px
 const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
@@ -37,19 +37,12 @@ const drawGrid = () => {
 const getIndex = (row, column) => {
     return row * width + column;
 };
-const bitIsSet = (n, arr) => {
-    const byte = Math.floor(n / 8);
-    const mask = 1 << (n % 8);
-    return ((arr[byte] ?? 0) & mask) === mask;
-};
 const drawCells = () => {
-    const cellsPtr = universe.cells();
-    const cells = new Uint8Array(memory.buffer, cellsPtr, width * height / 8);
     ctx.beginPath();
     for (let row = 0; row < height; row++) {
         for (let col = 0; col < width; col++) {
             const idx = getIndex(row, col);
-            ctx.fillStyle = bitIsSet(idx, cells)
+            ctx.fillStyle = universe.isAlive(idx)
                 ? ALIVE_COLOR
                 : DEAD_COLOR;
             ctx.fillRect(col * (CELL_SIZE + 1) + 1, row * (CELL_SIZE + 1) + 1, CELL_SIZE, CELL_SIZE);
