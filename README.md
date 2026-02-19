@@ -35,3 +35,9 @@ Executing the `run.sh` script does the following:
 - Serve `_site` with a HTTP server
 
 For execution only, serve `www/_site` with any HTTP server. I'm using `npx serve` here.
+
+## Future considerations
+
+I'm currently using the ReleaseSmall flag and the `wasm_allocator` to keep the WASM binary small, but following the techniques from the original tutorial might help me get it down even smaller: https://rustwasm.github.io/docs/book/game-of-life/code-size.html
+
+Another thing I'd like to explore as a part of this is translating the WASM file to the WAT format to try and understand some of the assembly code.
