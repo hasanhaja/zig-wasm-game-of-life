@@ -1,14 +1,12 @@
 {
   "name": "www",
   "version": "1.0.0",
-  "description": "",
   "scripts": {
-    "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Hasan Ali",
+  "license": "MIT",
   "type": "module",
   "devDependencies": {
     "@total-typescript/tsconfig": "^1.0.4",
